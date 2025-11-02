@@ -1,5 +1,5 @@
 import session from "express-session";
-import redis from "./config.js";
+import redis from "../config/redis.js";
 import { env } from "../config/env.js";
 import { RedisStore } from "connect-redis";
 

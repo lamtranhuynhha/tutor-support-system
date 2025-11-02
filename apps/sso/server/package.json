@@ -39,7 +39,8 @@
     "@tss/redis": "workspace:*",
     "@tss/config": "workspace:*",
     "@tss/utils": "workspace:*",
-    "@tss/middlewares": "workspace:*"
+    "@tss/middlewares": "workspace:*",
+    "@tss/nats": "workspace:*"
   },
   "devDependencies": {
     "eslint": "^9.38.0",

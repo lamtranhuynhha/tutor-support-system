@@ -8,7 +8,4 @@ export const env = {
   JWT_SECRET: process.env.JWT_SECRET,
   CORS_ORIGIN: process.env.CORS_ORIGIN,
   SERVICE_NAME: process.env.SERVICE_NAME,
-  NATS_STREAM: process.env.NATS_STREAM,
-  NATS_CONSUMER: process.env.NATS_CONSUMER,
-  NATS_DELIVERY: process.env.NATS_DELIVERY,
 };

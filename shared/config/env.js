@@ -14,4 +14,6 @@ export const env = {
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: process.env.REDIS_PORT,
   SESSION_SECRET: process.env.SESSION_SECRET,
+  NATS_URL: process.env.NATS_SERVER,
+  NATS_STREAM: process.env.NATS_STREAM,
 };

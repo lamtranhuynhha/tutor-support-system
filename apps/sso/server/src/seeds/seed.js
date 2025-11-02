@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { connectDB } from "@tss/config/db";
 import { logger } from "@tss/utils/logger";
 import { env } from "../config/env.js";
+import bcrypt from "bcryptjs";
 
 const seedUsers = [
   { userId: "2310001", username: "an.nguyen", mail: "an.nguyen@example.com", password: "123456" },
@@ -16,7 +17,14 @@ const importData = async () => {
 
     await User.deleteMany();
 
-    await User.insertMany(seedUsers);
+    const hashedUsers = await Promise.all(
+      seedUsers.map(async (user) => ({
+        ...user,
+        password: await bcrypt.hash(user.password, 10),
+      }))
+    );
+
+    await User.insertMany(hashedUsers);
     logger.info("Seed data imported successfully");
     process.exit();
   } catch (error) {

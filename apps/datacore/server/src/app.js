@@ -5,14 +5,13 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 // import createError from "http-errors";
-
-import routes from "./routes/index.js";
+// import routes from "./routes/index.js";
 import testRoute from "./routes/test.routes.js";
 import { env } from "./config/env.js";
 // eslint-disable-next-line import/no-unresolved
 import { errorHandler } from "@tss/middlewares/error";
 import { AppError } from "@tss/utils/AppError";
-import { sessionMiddleware } from "@tss/redis/session";
+// import { sessionMiddleware } from "@tss/redis/session";
 
 export const createApp = () => {
   const app = express();
@@ -27,9 +26,9 @@ export const createApp = () => {
   }
   app.use(cookieParser()); // Cookie parser
 
-  app.use(sessionMiddleware("sso")); // Session management
+  // app.use(sessionMiddleware("sso")); // Session management
   // Routes
-  app.use("/api", routes);
+  // app.use("/api", routes);
   app.use("/test", testRoute);
   // 404 handler
   app.use((_req, _res, next) => next(new AppError("Not Found", 404)));

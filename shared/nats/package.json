@@ -1,0 +1,12 @@
+{
+  "name": "@tss/nats",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./jetstream": "./jetstream.js",
+    "./wrapper": "./wrapper.js",
+    "./subjects": "./subjects.js",
+    "./setup": "./setup.js"
+  }
+}
