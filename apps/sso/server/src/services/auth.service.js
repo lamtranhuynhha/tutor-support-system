@@ -2,15 +2,15 @@ import { User } from "../models/user.model.js";
 import { AppError } from "@shared/utils/AppError";
 
 export const authService = {
-  async login({ username, password }) {
-    const user = await User.findOne({username});
+  async login({ username, password, req }) {
+    const user = await User.findOne({ username });
 
     if (!user || !user.isActive) {
       throw new AppError('Invalid credentials', 401);
     }
 
-    // allow 5 failed attempts
-    if (user.failedLoginCount >= 5) {
+    // allow 3 failed attempts
+    if (user.failedLoginCount >= 3) {
       throw new AppError('Too many failed attempts. Account locked', 423);
     }
 
@@ -19,7 +19,7 @@ export const authService = {
       user.failedLoginCount += 1;
       await user.save();
       
-      const remainingAttempts = 5 - user.failedLoginCount;
+      const remainingAttempts = 3 - user.failedLoginCount;
       const message = remainingAttempts > 0 
         ? `Wrong password. ${remainingAttempts} attempts remaining.`
         : 'Account locked. Please reset your password.';
@@ -32,32 +32,45 @@ export const authService = {
       await user.save();
     }
 
-    const token = jwt.sign(
-      { 
-        userId: user.userId,
-        username: user.username,
-        role: user.role 
-      },
-      env.JWT_SECRET,
-      { expiresIn: '24h' } // token expires in 24 hours
-    );
+    req.session.user = {
+      id: user._id.toString(),
+      username: user.username,
+      role: user.role
+    };
+
+    // Save the session (this will create/update it in Redis via connect-redis)
+    await new Promise((resolve, reject) => {
+      req.session.save(err => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
     const userData = user.toObject();
     delete userData.password;
-    return {
-      user: userData,
-      token
-    };
+    delete userData.failedLoginCount;
+
+    return { user: userData };
+  },
+  
+  async logout(req) {
+    return new Promise((resolve, reject) => {
+      req.session.destroy(err => {
+        if (err) {
+          console.error('Error during logout:', err);
+          reject(err);
+        } else {
+          resolve({ success: true });
+        }
+      });
+    });
   },
   
   async changePassword({ username, currentPassword, newPassword }) {
-    // YOUR CODE HERE
-  },
-  async resetPassword({ mail }) {
-    // YOUR CODE HERE
+    // Implementation for password change
   },
   
-  async logout({ userId }) {
-    // YOUR CODE HERE
-  },
+  async resetPassword({ email }) {
+    // Implementation for password reset
+  }
 };
