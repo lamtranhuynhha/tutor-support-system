@@ -5,12 +5,6 @@ import bcrypt from "bcryptjs";
 export const authService = {
   async login({ username, password }) {
     // YOUR CODE HERE
-    //--------------test test----------------
-    const user = await User.findOne({ username: username });
-    const validPassword = await user.comparePassword(password);
-    if (user == null || !validPassword) return false;
-    return true;
-    // --------------------------------------
   },
   async changePassword({ userId, currentpassword, newpassword }) {
     const user = await User.findById(userId);

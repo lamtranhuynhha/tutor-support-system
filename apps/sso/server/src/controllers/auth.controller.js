@@ -13,13 +13,6 @@ import { MailService } from "@shared/notifications/service";
 
 export const login = asyncHandler(async (req, res) => {
   // YOUR CODE HERE
-  //--------------test test----------------
-  const username = req.body.username;
-  const password = req.body.password;
-  const valid = await authService.login({ username, password });
-  if (valid) res.status(200).json({ message: "" });
-  return res.status(400).json({ message: "" });
-  // --------------------------------------
 });
 
 /**
