@@ -6,8 +6,6 @@ import ResetPasswordPage from "../pages/AuthPage/ResetPasswordPage";
 
 export default function AppRouter() {
   const location = useLocation();
-
-  // 🎯 Tự động cập nhật tiêu đề mỗi khi đổi route
   useEffect(() => {
     const pathTitleMap = {
       "/login": "Login | Tutor Support System",
