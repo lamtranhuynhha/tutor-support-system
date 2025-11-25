@@ -4,18 +4,22 @@ import { tokenService } from "../services/token.service.js";
 import { env } from "../config/env.js";
 
 export const login = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, redirect } = req.body;
   const { user } = await authService.login({ username, password });
-  
+
   req.session.user = {
     id: user._id.toString(),
     username: user.username,
-    role: user.role
+    role: user.role,
   };
-  
+
   await req.session.save();
 
-  res.status(200).json({success: true, data: {user}});
+  res.status(200).json({
+    success: true,
+    data: { user },
+    redirect: redirect || "/home",
+  });
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
@@ -66,15 +70,13 @@ export const resetPasswordToken = asyncHandler(async (req, res) => {
   return res.status(400).json({ message: "User not found" });
 });
 
-// delete session
 export const logout = asyncHandler(async (req, res) => {
   await req.session.destroy();
-  res.clearCookie('connect.sid', { 
-    path: '/',
+  res.clearCookie("connect.sid", {
+    path: "/",
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
-  
-  res.status(200).json({success: true, message: 'Successfully logged out'});
+  res.status(200).json({ success: true, message: "Successfully logged out" });
 });

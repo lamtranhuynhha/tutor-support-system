@@ -11,11 +11,10 @@ import { env } from "./config/env.js";
 const bootstrap = async () => {
   await connectDB(env.MONGO_URI);
   await natsWrapper.connect(env.SERVICE_NAME);
-  
+
   try {
-    // Ensure stream exists and is properly configured
     await setupJetStream();
-    
+
     // Now subscribe to the stream
     await natsWrapper.subscribeJetStream({
       stream: env.NATS_STREAM,
@@ -23,10 +22,10 @@ const bootstrap = async () => {
       filter: Subjects.UserCreated,
       deliver: env.NATS_DELIVERY,
     });
-    
+
     logger.info(`[NATS] Subscribed to ${Subjects.UserCreated}`);
   } catch (error) {
-    logger.error('Failed to set up NATS:', error);
+    logger.error("Failed to set up NATS:", error);
     process.exit(1);
   }
   const app = createApp();

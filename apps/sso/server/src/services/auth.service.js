@@ -6,7 +6,7 @@ export const authService = {
     const user = await User.findOne({ username });
 
     if (!user || !user.isActive) {
-      throw new AppError('Invalid credentials', 401);
+      throw new AppError("Invalid credentials", 401);
     }
 
     const isPasswordValid = await user.comparePassword(password);
@@ -15,15 +15,11 @@ export const authService = {
       if (user.failedLoginCount >= 3) {
         user.isActive = false;
         await user.save();
-        throw new AppError('Too many failed attempts. Account locked', 423);
+        throw new AppError("Too many failed attempts. Account locked", 423);
       }
       await user.save();
       const remainingAttempts = 3 - user.failedLoginCount;
       throw new AppError(`Wrong password. ${remainingAttempts} attempts remaining.`, 401);
-    }
-    
-    if (!user.isActive) {
-      throw new AppError('Account locked. Please reset your password.', 403);
     }
 
     if (user.failedLoginCount > 0) {
@@ -37,7 +33,7 @@ export const authService = {
 
     return { user: userData };
   },
-  
+
   async changePassword({ username, currentPassword, newPassword }) {
     // Implementation for password change
   },
@@ -54,11 +50,4 @@ export const authService = {
     }
     return user;
   },
-  async logout({ userId }) {
-    // YOUR CODE HERE
-  },
-  
-  async resetPassword({ email }) {
-    // Implementation for password reset
-  }
 };
