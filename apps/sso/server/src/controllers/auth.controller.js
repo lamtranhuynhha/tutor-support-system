@@ -12,7 +12,22 @@ import { MailService } from "@shared/notifications/service";
 // BE: resetPw: token in param, check token in redis, change pw, delete token, return 200
 
 export const login = asyncHandler(async (req, res) => {
-  // YOUR CODE HERE
+  const { username, password, redirect } = req.body;
+  const { user } = await authService.login({ username, password });
+
+  req.session.user = {
+    id: user._id.toString(),
+    username: user.username,
+    role: user.role,
+  };
+
+  await req.session.save();
+
+  res.status(200).json({
+    success: true,
+    data: { user },
+    redirect: redirect || "/home",
+  });
 });
 
 /**
@@ -88,5 +103,12 @@ export const resetPasswordToken = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  // YOUR CODE HERE
+  await req.session.destroy();
+  res.clearCookie("connect.sid", {
+    path: "/",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({ success: true, message: "Successfully logged out" });
 });

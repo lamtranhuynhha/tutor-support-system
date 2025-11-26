@@ -4,18 +4,42 @@ import bcrypt from "bcryptjs";
 
 export const authService = {
   async login({ username, password }) {
-    // YOUR CODE HERE
-  },
-  async changePassword({ userId, currentpassword, newpassword }) {
-    const user = await User.findById(userId);
-    const isMatch = await bcrypt.compare(currentpassword, user.password);
-    console.log(isMatch);
-    if (!isMatch) {
-      throw new AppError("Current password is incorrect", 400);
-    }
-    user.password = newpassword;
-    await user.save();
+    const user = await User.findOne({ username });
 
+    if (!user || !user.isActive) {
+      throw new AppError("Invalid credentials", 401);
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      user.failedLoginCount += 1;
+      if (user.failedLoginCount >= 3) {
+        user.isActive = false;
+        await user.save();
+        throw new AppError("Too many failed attempts. Account locked", 423);
+      }
+      await user.save();
+      const remainingAttempts = 3 - user.failedLoginCount;
+      throw new AppError(`Wrong password. ${remainingAttempts} attempts remaining.`, 401);
+    }
+
+    if (user.failedLoginCount > 0) {
+      user.failedLoginCount = 0;
+      await user.save();
+    }
+
+    const userData = user.toObject();
+    delete userData.password;
+    delete userData.failedLoginCount;
+
+    return { user: userData };
+  },
+
+  async changePassword({ username, currentPassword, newPassword }) {
+    // Implementation for password change
+  },
+  async findUser({ username, mail }) {
+    const user = await User.findOne({ username: username, mail: mail });
     return user;
   },
   async resetPassword({ userId, newpassword, confirm }) {
@@ -27,8 +51,5 @@ export const authService = {
       return null;
     }
     return user;
-  },
-  async logout({ userId }) {
-    // YOUR CODE HERE
   },
 };
