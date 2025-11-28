@@ -6,7 +6,6 @@ import {
   sendToken,
   resetPassword,
 } from "../controllers/auth.controller.js";
-import {} from "../middlewares/validate.middleware.js";
 
 export const router = Router();
 
